@@ -100,7 +100,7 @@ public class GoogleScraper {
                 
                 status = downloadSerp(url, referrer, search, retry);
                 if(status == Status.OK){
-                    status = parseSerp(urls);
+                    status = parseSerp(urls, search);
                     if(status == Status.OK){
                         break;
                     }
@@ -196,7 +196,7 @@ public class GoogleScraper {
         return Status.ERROR_NETWORK;
     }
     
-    protected Status parseSerp(List<String> urls){
+    protected Status parseSerp(List<String> urls, GoogleScrapSearch search){
         String html = http.getContentAsString();
         if(html == null || html.isEmpty()){
             return Status.ERROR_NETWORK;
@@ -206,8 +206,22 @@ public class GoogleScraper {
         if(lastSerpHtml == null){
             return Status.ERROR_NETWORK;
         }
+       
+        String h3Pattern = null;
+        switch(search.getDevice()){
+            case DESKTOP:
+                h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                break;
+            case SMARTPHONE:
+                h3Pattern = "#ires div.srg div:not(#imagebox_bigimages).g div.rc > div:not(._myh) h3";
+                break;
+        }
         
-        Elements h3Elts = lastSerpHtml.getElementsByTag("h3");
+        Elements h3Elts = lastSerpHtml.select(h3Pattern);
+	if (h3Elts.size() == 0) {
+                h3Elts = lastSerpHtml.getElementsByTag("h3");
+        }
+        // Elements h3Elts = lastSerpHtml.getElementsByTag("h3");
         for (Element h3Elt : h3Elts) {
 
             if(isSiteLinkElement(h3Elt)){
