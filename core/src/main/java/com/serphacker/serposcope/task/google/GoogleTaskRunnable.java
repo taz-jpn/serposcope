@@ -108,7 +108,7 @@ public class GoogleTaskRunnable implements Runnable {
 
                 if (res.status != OK) {
                     LOG.warn("scrap failed for {} because of {}", search.getKeyword(), res.status);
-                    proxy = null;
+                    // proxy = null;
                     continue;
                 }
 
