@@ -58,9 +58,8 @@ public class GoogleScraper {
         NCR_COOKIE.setAttribute(ClientCookie.DOMAIN_ATTR, ".google.com");
     }
     
-    public final static String DEFAULT_DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0";
-    public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19";
-//    public final static String DEFAULT_MOBILE_UA = "Mozilla/5.0 (Android; Mobile; rv:37.0) Gecko/37.0 Firefox/37.0";
+    public final static String DEFAULT_DESKTOP_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
+    public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_3 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.0 Mobile/14G60 Safari/602.1";
     
     private static final Logger LOG = LoggerFactory.getLogger(GoogleScraper.class);
 
@@ -210,7 +209,8 @@ public class GoogleScraper {
         String h3Pattern = null;
         switch(search.getDevice()){
             case DESKTOP:
-                h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                h3Pattern = "#ires div._NId div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                //h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 break;
             case SMARTPHONE:
                 h3Pattern = "#ires div.srg div:not(#imagebox_bigimages).g div.rc > div:not(._myh) h3";
