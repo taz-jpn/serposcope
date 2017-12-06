@@ -213,7 +213,9 @@ public class GoogleScraper {
                 //h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 break;
             case SMARTPHONE:
-                h3Pattern = "#ires div.srg div:not(#imagebox_bigimages).g div.rc > div:not(._myh) h3";
+                h3Pattern = "#ires div._Z1m div a._Olt";
+                //h3Pattern = "//div[@id=\"ires\"]//div[@class=\"_Z1m\"]/div[.//a]";
+                //h3Pattern = "#ires div.srg div:not(#imagebox_bigimages).g div.rc > div:not(._myh) h3";
                 break;
         }
         
