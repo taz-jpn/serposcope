@@ -129,7 +129,8 @@ serposcope.googleGroupControllerGrid = function () {
     };
 
     var filterGrid = function (item) {
-        if (filter.keyword !== '' && item.keyword.toLowerCase().indexOf(filter.keyword) === -1) {
+        //if (filter.keyword !== '' && item.keyword.toLowerCase().indexOf(filter.keyword) === -1) {
+        if (filter.keyword !== '' && !new RegExp(filter.keyword).test(item.keyword.toLowerCase())) {
             return false;
         }
 

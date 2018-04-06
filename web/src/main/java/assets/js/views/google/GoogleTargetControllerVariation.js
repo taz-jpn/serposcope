@@ -130,7 +130,8 @@ serposcope.googleTargetControllerVariation = function () {
     };
 
     var filterGrid = function (item) {
-        if (filter.keyword !== '' && item.search.keyword.toLowerCase().indexOf(filter.keyword) === -1) {
+        //if (filter.keyword !== '' && item.search.keyword.toLowerCase().indexOf(filter.keyword) === -1) {
+        if (filter.keyword !== '' && !new RegExp(filter.keyword).test(item.search.keyword.toLowerCase())) {
             return false;
         }
 
