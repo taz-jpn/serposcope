@@ -58,8 +58,8 @@ public class GoogleScraper {
         NCR_COOKIE.setAttribute(ClientCookie.DOMAIN_ATTR, ".google.com");
     }
     
-    public final static String DEFAULT_DESKTOP_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36";
-    public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_6 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/65.0.3325.152 Mobile/15D100 Safari/604.1";
+    public final static String DEFAULT_DESKTOP_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15";
+    public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1";
     
     private static final Logger LOG = LoggerFactory.getLogger(GoogleScraper.class);
 
@@ -209,15 +209,14 @@ public class GoogleScraper {
         String h3Pattern = null;
         switch(search.getDevice()){
             case DESKTOP:
-                h3Pattern = "#ires div._NId div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                h3Pattern = "#ires div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                //h3Pattern = "#rso div:not(#imagebox_bigimages).g div.rc > h3 > a";
+                //h3Pattern = "#ires div._NId div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 //h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 break;
             case SMARTPHONE:
-                h3Pattern = "#rso .srg > div .C8nzq.JTuIPc, #rso .srg > div ._Olt._bCp";
-                //h3Pattern = "#ires div._Z1m div a._Olt, div.mnr-c div.g.card-section div.rc div._OXf._cDr div._fSg h3.r a._wSg";
-                //h3Pattern = "#ires div._Z1m div a._Olt";
-                //h3Pattern = "//div[@id=\"ires\"]//div[@class=\"_Z1m\"]/div[.//a]";
-                //h3Pattern = "#ires div.srg div:not(#imagebox_bigimages).g div.rc > div:not(._myh) h3";
+                h3Pattern = "#rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
+                //h3Pattern = "#rso .srg > div .C8nzq.JTuIPc, #rso .srg > div ._Olt._bCp";
                 break;
         }
         
