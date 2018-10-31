@@ -209,13 +209,15 @@ public class GoogleScraper {
         String h3Pattern = null;
         switch(search.getDevice()){
             case DESKTOP:
-                h3Pattern = "#ires div:not(#imagebox_bigimages).g > div > div.rc > h3";
+                h3Pattern = "#ires .srg div:not(#imagebox_bigimages).g > div > div.rc > div.r";
+                //h3Pattern = "#ires div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 //h3Pattern = "#rso div:not(#imagebox_bigimages).g div.rc > h3 > a";
                 //h3Pattern = "#ires div._NId div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 //h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 break;
             case SMARTPHONE:
-                h3Pattern = "#rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
+                h3Pattern = "#rso > div.srg a.C8nzq.BmP5tf, #rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
+                //h3Pattern = "#rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
                 //h3Pattern = "#rso .srg > div .C8nzq.JTuIPc, #rso .srg > div ._Olt._bCp";
                 break;
         }
