@@ -7,6 +7,7 @@
  */
 package com.serphacker.serposcope.scraper.google.scraper;
 
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.scraper.captcha.Captcha;
 import com.serphacker.serposcope.scraper.captcha.CaptchaImage;
 import com.serphacker.serposcope.scraper.captcha.CaptchaRecaptcha;
@@ -30,6 +31,8 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.serphacker.serposcope.scraper.http.proxy.HttpProxy;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -188,6 +191,12 @@ public class GoogleScraper {
                 break;
 
             case 302:
+                HttpProxy httpProxy = (HttpProxy) http.getProxy();
+                AmazonProxy amazonProxy = new AmazonProxy();
+                String instanceId = amazonProxy.getInstanceId(httpProxy.getIp());
+                if (instanceId != "") {
+                    amazonProxy.StopInstance(instanceId);
+                }
                 ++captchas;
                 return handleCaptchaRedirect(url, referrer, http.getResponseHeader("location"));
         }
