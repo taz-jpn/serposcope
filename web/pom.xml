@@ -61,7 +61,7 @@
                                     </excludes>
                                 </bannedDependencies>
                             </rules>
-                            <fail>true</fail>
+                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>
