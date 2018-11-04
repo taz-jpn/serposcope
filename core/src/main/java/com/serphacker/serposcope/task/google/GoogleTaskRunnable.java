@@ -137,7 +137,9 @@ public class GoogleTaskRunnable implements Runnable {
         scrapSearch.setPagePauseMS(options.getMinPauseBetweenPageSec()*1000l, options.getMaxPauseBetweenPageSec()*1000l);
         scrapSearch.setPages(options.getPages());
         scrapSearch.setResultPerPage(options.getResultPerPage());
-        
+        scrapSearch.setUserAgentDesktop(options.getDefaultUserAgentDesktop());
+        scrapSearch.setUserAgentMobile(options.getDefaultUserAgentMobile());
+
         scrapSearch.setCustomParameters(search.getCustomParameters());
         scrapSearch.setDatacenter(search.getDatacenter());
         scrapSearch.setDevice(search.getDevice());

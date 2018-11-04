@@ -14,6 +14,8 @@ import java.util.Random;
 public class GoogleScrapSearch {
     
     private final static Random random = new Random();
+    private String userAgentDesktop;
+    private String userAgentMobile;
 
     public GoogleScrapSearch() {
     }
@@ -35,6 +37,18 @@ public class GoogleScrapSearch {
 
     public void setResultPerPage(int resultPerPage) {
         this.resultPerPage = resultPerPage;
+    }
+
+    public String getUserAgentDesktop() { return this.userAgentDesktop; }
+
+    public void setUserAgentDesktop(String value) {
+        this.userAgentDesktop = value;
+    }
+
+    public String getUserAgentMobile() { return this.userAgentMobile; }
+
+    public void setUserAgentMobile(String value) {
+        this.userAgentMobile = value;
     }
 
     public int getPages() {

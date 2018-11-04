@@ -24,10 +24,12 @@ public class GoogleOptionsDB {
     
     private final static String DEFAULT_DATACENTER = "google.default_datacenter";
     private final static String DEFAULT_DEVICE = "google.default.device";
+    private final static String DEFAULT_USERAGENT_DESKTOP = "google.default.userAgentDesktop";
+    private final static String DEFAULT_USERAGENT_MOBILE = "google.default.userAgentMobile";
     private final static String DEFAULT_LOCAL = "google.default.local";
     private final static String DEFAULT_TLD = "google.default.tld";
     private final static String DEFAULT_CUSTOM_PARAMETERS = "google.default.custom";
-    
+
     @Inject
     ConfigDB configDB;
     
@@ -43,6 +45,8 @@ public class GoogleOptionsDB {
         
         options.setDefaultDatacenter(configDB.get(DEFAULT_DATACENTER, options.getDefaultDatacenter()));
         options.setDefaultDevice(configDB.get(DEFAULT_DEVICE, null));
+        options.setDefaultUserAgentDesktop(configDB.get(DEFAULT_USERAGENT_DESKTOP, options.getDefaultUserAgentDesktop()));
+        options.setDefaultUserAgentMobile(configDB.get(DEFAULT_USERAGENT_MOBILE, options.getDefaultUserAgentMobile()));
         options.setDefaultLocal(configDB.get(DEFAULT_LOCAL, options.getDefaultLocal()));
         options.setDefaultTld(configDB.get(DEFAULT_TLD, options.getDefaultTld()));
         options.setDefaultCustomParameters(configDB.get(DEFAULT_CUSTOM_PARAMETERS, options.getDefaultCustomParameters()));
@@ -65,6 +69,8 @@ public class GoogleOptionsDB {
         // search
         configDB.update(DEFAULT_DATACENTER, nullIfDefault(opts.getDefaultDatacenter(), def.getDefaultDatacenter()));
         configDB.updateInt(DEFAULT_DEVICE, nullIfDefault(opts.getDefaultDevice().ordinal(), def.getDefaultDevice().ordinal()));
+        configDB.update(DEFAULT_USERAGENT_DESKTOP, nullIfDefault(opts.getDefaultUserAgentDesktop(), def.getDefaultUserAgentDesktop()));
+        configDB.update(DEFAULT_USERAGENT_MOBILE, nullIfDefault(opts.getDefaultUserAgentMobile(), def.getDefaultUserAgentMobile()));
         configDB.update(DEFAULT_LOCAL, nullIfDefault(opts.getDefaultLocal(), def.getDefaultLocal()));
         configDB.update(DEFAULT_TLD, nullIfDefault(opts.getDefaultTld(), def.getDefaultTld()));
         configDB.update(DEFAULT_CUSTOM_PARAMETERS, nullIfDefault(opts.getDefaultCustomParameters(),def.getDefaultCustomParameters()));

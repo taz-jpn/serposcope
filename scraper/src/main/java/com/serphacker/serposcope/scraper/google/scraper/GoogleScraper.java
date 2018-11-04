@@ -154,10 +154,10 @@ public class GoogleScraper {
         
         switch(search.getDevice()){
             case DESKTOP:
-                http.setUseragent(DEFAULT_DESKTOP_UA);
+                http.setUseragent(search.getUserAgentDesktop());
                 break;
             case SMARTPHONE:
-                http.setUseragent(DEFAULT_SMARTPHONE_UA);
+                http.setUseragent(search.getUserAgentMobile());
                 break;
         }
         

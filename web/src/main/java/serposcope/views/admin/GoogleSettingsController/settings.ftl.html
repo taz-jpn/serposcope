@@ -95,6 +95,18 @@
                 </div>
 
                 <div class="form-group" >
+                    <label for="userAgentDesktop" >${i18n("label.userAgentDesktop")}</label>
+                    <input id="userAgentDesktop" class="form-control" name="userAgentDesktop" value="${options.getDefaultUserAgentDesktop()!""}" >
+                    <span class="help-block">${i18n("admin.google.userAgentDesktopHelp")}</span>
+                </div>
+
+                <div class="form-group" >
+                    <label for="userAgentMobile" >${i18n("label.userAgentMobile")}</label>
+                    <input id="userAgentMobile" class="form-control" name="userAgentMobile" value="${options.getDefaultUserAgentMobile()!""}" >
+                    <span class="help-block">${i18n("admin.google.userAgentMobileHelp")}</span>
+                </div>
+
+                <div class="form-group" >
                     <label for="searchLocal" >${i18n("label.local")}</label>
                     <input id="searchLocal" class="form-control search-local" name="local" value="${options.getDefaultLocal()!""}" >
                     <span class="help-block"><#noescape>${i18n("admin.google.localHelp")}</#noescape></span>

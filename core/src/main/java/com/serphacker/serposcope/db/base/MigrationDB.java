@@ -175,5 +175,4 @@ public class MigrationDB extends AbstractDB {
         }
         stmt.executeUpdate("insert into `CONFIG` values ('app.dbversion','6') on duplicate key update `value` = '6';");
     }
-    
 }

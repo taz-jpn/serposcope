@@ -12,8 +12,6 @@ import com.google.inject.Singleton;
 import com.serphacker.serposcope.db.google.GoogleDB;
 import com.serphacker.serposcope.models.google.GoogleSettings;
 import com.serphacker.serposcope.scraper.google.GoogleDevice;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
@@ -56,6 +54,7 @@ public class GoogleSettingsController extends BaseController {
         @Param("maxThreads") Integer maxThreads, @Param("fetchRetry") Integer fetchRetry,
         @Param("tld") String tld, @Param("datacenter") String datacenter,
         @Param("device") Integer device,
+        @Param("userAgentDesktop") String userAgentDesktop, @Param("userAgentMobile") String userAgentMobile,
         @Param("local") String local, @Param("custom") String custom
     ){
         FlashScope flash = context.getFlashScope();
@@ -115,7 +114,23 @@ public class GoogleSettingsController extends BaseController {
         } else {
             options.setDefaultDevice(GoogleDevice.DESKTOP);
         }
-        
+
+        LOG.debug(userAgentDesktop);
+        if(!Validator.isEmpty(userAgentDesktop)){
+            LOG.debug("a");
+            options.setDefaultUserAgentDesktop(userAgentDesktop);
+        } else {
+            options.setDefaultUserAgentDesktop(defaultOptions.getDefaultUserAgentDesktop());
+        }
+
+        LOG.debug(userAgentMobile);
+        if(!Validator.isEmpty(userAgentMobile)){
+            LOG.debug("b");
+            options.setDefaultUserAgentMobile(userAgentMobile);
+        } else {
+            options.setDefaultUserAgentMobile(defaultOptions.getDefaultUserAgentMobile());
+        }
+
         if(Validator.isNotEmpty(local)){
             options.setDefaultLocal(local);
         } else {
