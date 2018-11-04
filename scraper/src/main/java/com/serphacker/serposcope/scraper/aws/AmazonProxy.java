@@ -36,4 +36,16 @@ public class AmazonProxy {
         }
         return "";
     }
+
+    public Boolean IsRunning() {
+        final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+
+        Filter status =  new Filter("instance-state-name").withValues("running");
+        Filter tagName =  new Filter("tag:Name").withValues("dev-kage-proxy*");
+        DescribeInstancesRequest request = new DescribeInstancesRequest()
+                .withFilters(status, tagName);
+        DescribeInstancesResult response = ec2.describeInstances(request);
+
+        return response.getReservations().size() > 0;
+    }
 }
