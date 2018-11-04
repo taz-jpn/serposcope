@@ -80,6 +80,18 @@ public class GoogleScraper {
     }
     
     public GoogleScrapResult scrap(GoogleScrapSearch search) throws InterruptedException {
+        // check instance status
+        AmazonProxy amazonProxy = new AmazonProxy();
+        if (!amazonProxy.IsRunning()) {
+            // if instances are all dead then sleep 120 seconds
+            try {
+                LOG.trace("sleeping 2000 milliseconds");
+                Thread.sleep(2000);
+            } catch(InterruptedException ex){
+                throw ex;
+            }
+        }
+
         lastSerpHtml = null;
         captchas = 0;
         List<String> urls = new ArrayList<>();
