@@ -29,6 +29,8 @@ public class GoogleOptionsDB {
     private final static String DEFAULT_LOCAL = "google.default.local";
     private final static String DEFAULT_TLD = "google.default.tld";
     private final static String DEFAULT_CUSTOM_PARAMETERS = "google.default.custom";
+    private static final String DEFAULT_SERPS_SELECTOR_DESKTOP = "google.default.serpsSelectorDesktop";
+    private static final String DEFAULT_SERPS_SELECTOR_MOBILE = "google.default.serpsSelectorMobile";
 
     @Inject
     ConfigDB configDB;
@@ -50,7 +52,9 @@ public class GoogleOptionsDB {
         options.setDefaultLocal(configDB.get(DEFAULT_LOCAL, options.getDefaultLocal()));
         options.setDefaultTld(configDB.get(DEFAULT_TLD, options.getDefaultTld()));
         options.setDefaultCustomParameters(configDB.get(DEFAULT_CUSTOM_PARAMETERS, options.getDefaultCustomParameters()));
-        
+        options.setDefaultserpsSelectorDesktop(configDB.get(DEFAULT_SERPS_SELECTOR_DESKTOP, options.getDefaultserpsSelectorDesktop()));
+        options.setDefaultserpsSelectorMobile(configDB.get(DEFAULT_SERPS_SELECTOR_MOBILE, options.getDefaultserpsSelectorMobile()));
+
         return options;
     }
     
@@ -74,7 +78,9 @@ public class GoogleOptionsDB {
         configDB.update(DEFAULT_LOCAL, nullIfDefault(opts.getDefaultLocal(), def.getDefaultLocal()));
         configDB.update(DEFAULT_TLD, nullIfDefault(opts.getDefaultTld(), def.getDefaultTld()));
         configDB.update(DEFAULT_CUSTOM_PARAMETERS, nullIfDefault(opts.getDefaultCustomParameters(),def.getDefaultCustomParameters()));
-        
+        configDB.update(DEFAULT_SERPS_SELECTOR_DESKTOP, nullIfDefault(opts.getDefaultserpsSelectorDesktop(),def.getDefaultserpsSelectorDesktop()));
+        configDB.update(DEFAULT_SERPS_SELECTOR_MOBILE, nullIfDefault(opts.getDefaultserpsSelectorMobile(),def.getDefaultserpsSelectorMobile()));
+
     }
     
     protected Integer nullIfDefault(Integer value, Integer def){

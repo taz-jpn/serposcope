@@ -139,6 +139,8 @@ public class GoogleTaskRunnable implements Runnable {
         scrapSearch.setResultPerPage(options.getResultPerPage());
         scrapSearch.setUserAgentDesktop(options.getDefaultUserAgentDesktop());
         scrapSearch.setUserAgentMobile(options.getDefaultUserAgentMobile());
+        scrapSearch.setSerpsSelectorDesktop(options.getDefaultserpsSelectorDesktop());
+        scrapSearch.setSerpsSelectorMobile(options.getDefaultserpsSelectorMobile());
 
         scrapSearch.setCustomParameters(search.getCustomParameters());
         scrapSearch.setDatacenter(search.getDatacenter());
@@ -146,7 +148,7 @@ public class GoogleTaskRunnable implements Runnable {
         scrapSearch.setKeyword(search.getKeyword());
         scrapSearch.setTld(search.getTld());
         scrapSearch.setLocal(search.getLocal());
-        
+
         return scrapSearch;
     }
     public static final long serialVersionUID = 0L;

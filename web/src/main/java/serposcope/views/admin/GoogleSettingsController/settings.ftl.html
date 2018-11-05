@@ -117,9 +117,24 @@
                     <input id="searchCustomParameters" class="form-control" name="custom" 
                            value="${options.getDefaultCustomParameters()!""}"  >
                     <span class="help-block">${i18n("admin.google.customHelp")}</span>
-                </div>       
+                </div>
 
-                
+                <hr/>
+                <h2 class="styled-h2">${i18n("admin.google.defaultSerpsSelectorOptions")}</h2>
+                <hr/>
+
+                <div class="form-group" >
+                    <label for="serpsSelectorDesktop" >${i18n("label.serpsSelectorDesktop")}</label>
+                    <input id="serpsSelectorDesktop" class="form-control" name="serpsSelectorDesktop" value="${options.getDefaultserpsSelectorDesktop()!""}" >
+                    <span class="help-block">${i18n("admin.google.serpsSelectorDesktopHelp")}</span>
+                </div>
+
+                <div class="form-group" >
+                    <label for="serpsSelectorMobile" >${i18n("label.serpsSelectorMobile")}</label>
+                    <input id="serpsSelectorMobile" class="form-control" name="serpsSelectorMobile" value="${options.getDefaultserpsSelectorMobile()!""}" >
+                    <span class="help-block">${i18n("admin.google.serpsSelectorMobileHelp")}</span>
+                </div>
+
                 <hr/>
                 <input type="button" id="btn-reset-settings" class="btn btn-default" value="${i18n("label.reset")}" 
                     data-action="${reverseRoute("admin.GoogleSettingsController","reset")}" />

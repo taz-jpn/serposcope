@@ -55,6 +55,7 @@ public class GoogleSettingsController extends BaseController {
         @Param("tld") String tld, @Param("datacenter") String datacenter,
         @Param("device") Integer device,
         @Param("userAgentDesktop") String userAgentDesktop, @Param("userAgentMobile") String userAgentMobile,
+        @Param("serpsSelectorDesktop") String serpsSelectorDesktop, @Param("serpsSelectorMobile") String serpsSelectorMobile,
         @Param("local") String local, @Param("custom") String custom
     ){
         FlashScope flash = context.getFlashScope();
@@ -115,17 +116,13 @@ public class GoogleSettingsController extends BaseController {
             options.setDefaultDevice(GoogleDevice.DESKTOP);
         }
 
-        LOG.debug(userAgentDesktop);
         if(!Validator.isEmpty(userAgentDesktop)){
-            LOG.debug("a");
             options.setDefaultUserAgentDesktop(userAgentDesktop);
         } else {
             options.setDefaultUserAgentDesktop(defaultOptions.getDefaultUserAgentDesktop());
         }
 
-        LOG.debug(userAgentMobile);
         if(!Validator.isEmpty(userAgentMobile)){
-            LOG.debug("b");
             options.setDefaultUserAgentMobile(userAgentMobile);
         } else {
             options.setDefaultUserAgentMobile(defaultOptions.getDefaultUserAgentMobile());
@@ -141,9 +138,20 @@ public class GoogleSettingsController extends BaseController {
             options.setDefaultCustomParameters(custom);
         } else {
             options.setDefaultCustomParameters(defaultOptions.getDefaultCustomParameters());
-        }        
-        
-        
+        }
+
+        if(!Validator.isEmpty(serpsSelectorDesktop)){
+            options.setDefaultserpsSelectorDesktop(serpsSelectorDesktop);
+        } else {
+            options.setDefaultserpsSelectorDesktop(defaultOptions.getDefaultserpsSelectorDesktop());
+        }
+
+        if(!Validator.isEmpty(serpsSelectorMobile)){
+            options.setDefaultserpsSelectorMobile(serpsSelectorMobile);
+        } else {
+            options.setDefaultserpsSelectorMobile(defaultOptions.getDefaultserpsSelectorMobile());
+        }
+
         googleDB.options.update(options);
         
         flash.success("label.settingsUpdated");
