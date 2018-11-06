@@ -8,15 +8,21 @@
 
 package serposcope.services;
 
+import com.serphacker.serposcope.db.base.BaseDB;
 import com.serphacker.serposcope.db.base.ConfigDB;
 import com.serphacker.serposcope.db.base.PruneDB;
+import com.serphacker.serposcope.db.google.GoogleDB;
 import com.serphacker.serposcope.models.base.Config;
 import com.serphacker.serposcope.models.base.Group;
 import com.serphacker.serposcope.models.base.Group.Module;
 import com.serphacker.serposcope.models.base.Run;
+import com.serphacker.serposcope.models.google.GoogleSearch;
+import com.serphacker.serposcope.models.google.GoogleTarget;
 import com.serphacker.serposcope.task.TaskManager;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +42,12 @@ public class CronService implements Runnable {
     LocalTime previousCheck = null;
     ScheduledExecutorService executor;
 
-    
+    @com.google.inject.Inject
+    GoogleDB googleDB;
+
+    @com.google.inject.Inject
+    BaseDB baseDB;
+
     @Inject
     TaskManager manager;
     
@@ -76,8 +87,15 @@ public class CronService implements Runnable {
         if(config.getCronTime().getHour() != now.getHour() || config.getCronTime().getMinute() != now.getMinute()){
             return;
         }
-        
-        
+
+        // rescan !!
+        List<Group> groups = baseDB.group.list();
+        for (Group group : groups) {
+            List<GoogleTarget> targets = googleDB.target.list(Arrays.asList(group.getId()));
+            List<GoogleSearch> searches = googleDB.search.listByGroup(Arrays.asList(group.getId()));
+            googleDB.serpRescan.rescan(null, targets, searches, false);
+        }
+
         if(manager.startGoogleTask(new Run(Run.Mode.CRON, Module.GOOGLE, LocalDateTime.now()))){
             LOG.debug("starting google task via cron");
         } else {

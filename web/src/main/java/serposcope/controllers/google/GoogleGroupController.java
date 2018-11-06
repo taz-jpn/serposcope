@@ -258,7 +258,7 @@ public class GoogleGroupController extends GoogleController {
             googleDB.search.insert(searches, group.getId());
         }
 
-        googleDB.serpRescan.rescan(null, getTargets(context), knownSearches, false);
+//        googleDB.serpRescan.rescan(null, getTargets(context), knownSearches, false);
 
         flash.success("google.group.searchInserted");
         return Results.redirect(router.getReverseRoute(GoogleGroupController.class, "view", "groupId", group.getId()) + "#tab-searches");
@@ -331,7 +331,7 @@ public class GoogleGroupController extends GoogleController {
             flash.error("error.internalError");
             return Results.redirect(router.getReverseRoute(GoogleGroupController.class, "view", "groupId", group.getId()));
         }
-        googleDB.serpRescan.rescan(null, targets, getSearches(context), true);
+//        googleDB.serpRescan.rescan(null, targets, getSearches(context), true);
 
         Run runningGoogleTask = taskManager.getRunningGoogleTask();
         if (runningGoogleTask != null) {
