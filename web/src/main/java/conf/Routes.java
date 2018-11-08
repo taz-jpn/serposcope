@@ -41,6 +41,8 @@ public class Routes implements ApplicationRoutes {
         router.POST().route("/api/sites/add").with(ApiGoogleGroupController.class, "addTarget");
         router.POST().route("/api/sites/delete").with(ApiGoogleGroupController.class, "delTarget");
         router.POST().route("/api/sites/rename").with(ApiGoogleGroupController.class, "renameTarget");
+        router.POST().route("/api/search/add").with(ApiGoogleGroupController.class, "addSearch");
+        router.POST().route("/api/search/delete").with(ApiGoogleGroupController.class, "delSearch");
 
         // authentication
         router.GET().route("/create-admin").with(AuthController.class, "createAdmin");
