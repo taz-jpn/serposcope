@@ -12,6 +12,8 @@ import ninja.AssetsController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 import serposcope.controllers.admin.UsersController;
+import serposcope.controllers.api.ApiGoogleGroupController;
+import serposcope.controllers.api.ApiGroupController;
 import serposcope.controllers.AuthController;
 import serposcope.controllers.GroupController;
 import serposcope.controllers.HomeController;
@@ -31,7 +33,12 @@ public class Routes implements ApplicationRoutes {
 
     @Override
     public void init(Router router) {  
-        
+
+        // api
+        router.POST().route("/api/groups/create").with(ApiGroupController.class, "create");
+        router.POST().route("/api/groups/delete").with(ApiGoogleGroupController.class, "delete");
+        router.POST().route("/api/groups/rename").with(ApiGoogleGroupController.class, "rename");
+
         // authentication
         router.GET().route("/create-admin").with(AuthController.class, "createAdmin");
         router.POST().route("/create-admin").with(AuthController.class, "doCreateAdmin");
