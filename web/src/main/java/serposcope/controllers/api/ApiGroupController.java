@@ -5,7 +5,9 @@ import com.google.inject.Singleton;
 import com.serphacker.serposcope.db.base.BaseDB;
 import com.serphacker.serposcope.models.base.Group;
 import com.serphacker.serposcope.models.base.Group.Module;
+import conf.IpFilter;
 import ninja.Context;
+import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
@@ -17,6 +19,7 @@ public class ApiGroupController extends BaseController {
     @Inject
     BaseDB baseDB;
 
+    @FilterWith(IpFilter.class)
     public Result create(Context context, @Param("name") String name) {
         try {
             if (name == null || name.isEmpty()) {

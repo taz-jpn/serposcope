@@ -1,5 +1,5 @@
-<#import "../layout/defaultLayout.ftl.html" as layout>
-<@layout.myLayout "Error. Forbidden.">
+<#import "../layout/unlogged.ftl.html" as layout>
+<@layout.unloggedLayout i18n("403 Forbidden") >
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -15,4 +15,4 @@
         </div>
     </div>
 </div>
-</@layout.myLayout>
+</@>

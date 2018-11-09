@@ -8,7 +8,9 @@ import com.serphacker.serposcope.models.google.GoogleSearch;
 import com.serphacker.serposcope.models.google.GoogleTarget;
 import com.serphacker.serposcope.scraper.google.GoogleDevice;
 import com.serphacker.serposcope.task.TaskManager;
+import conf.IpFilter;
 import ninja.Context;
+import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
@@ -37,6 +39,7 @@ public class ApiGoogleGroupController extends BaseController {
 
     final Object searchLock = new Object();
 
+    @FilterWith(IpFilter.class)
     public Result delSearch(
             @Param("groupId") String groupId,
             @Params("id[]") String[] ids
@@ -89,6 +92,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
+    @FilterWith(IpFilter.class)
     public Result addSearch(
             Context context,
             @Param("groupId") String groupId,
@@ -175,6 +179,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
+    @FilterWith(IpFilter.class)
     public Result renameTarget(
             @Param("groupId") String groupId,
             @Param("name") String name,
@@ -214,6 +219,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
+    @FilterWith(IpFilter.class)
     public Result delTarget(
             @Param("groupId") String groupId,
             @Params("id[]") String[] ids
@@ -291,6 +297,7 @@ public class ApiGoogleGroupController extends BaseController {
         return null;
     }
 
+    @FilterWith(IpFilter.class)
     public Result addTarget(
             Context context,
             @Param("groupId") String groupId,
@@ -367,6 +374,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
+    @FilterWith(IpFilter.class)
     public Result rename(Context context, @Param("groupId") String groupId, @Param("name") String name) {
         try {
             if (groupId == null || name == null) {
@@ -399,6 +407,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
+    @FilterWith(IpFilter.class)
     public Result delete(Context context, @Param("groupId") String groupId) {
         try {
             if (groupId == null) {
@@ -445,7 +454,7 @@ public class ApiGoogleGroupController extends BaseController {
         }
     }
 
-    protected void deleteSearch(Group group, GoogleSearch search) {
+    private void deleteSearch(Group group, GoogleSearch search) {
         synchronized (searchLock) {
             googleDB.search.deleteFromGroup(search, group.getId());
             googleDB.rank.deleteBySearch(group.getId(), search.getId());
