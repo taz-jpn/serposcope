@@ -302,69 +302,75 @@ public class ApiGoogleGroupController extends BaseController {
             Context context,
             @Param("groupId") String groupId,
             @Param("type") String targetType,
-            @Params("name[]") String[] names,
-            @Params("pattern[]") String[] patterns
+            @Param("name") String name,
+            @Param("pattern") String pattern
     ) {
         try {
             if (targetType == null
                     || groupId == null
-                    || names == null || names.length == 0
-                    || patterns == null || patterns.length == 0
-                    || names.length != patterns.length) {
+                    || name == null
+                    || pattern == null) {
                 throw new Exception("error.invalidParameters");
             }
             if (!Pattern.matches("^[1-9]?[0-9]+$", groupId)) {
                 throw new Exception("error.invalidGroupId");
             }
 
-            Set<GoogleTarget> targets = new HashSet<>();
-            for (int i = 0; i < names.length; i++) {
-                String name = names[i];
-                String pattern = patterns[i];
-
-                if (name != null) {
-                    name = name.replaceAll("(^\\s+)|(\\s+$)", "");
+            // get registered target list
+            List<GoogleTarget> targetList = googleDB.target.list(null);
+            for (GoogleTarget target: targetList) {
+                LOG.debug("group pattern={}", target.getPattern());
+                if (target.getPattern().equals(pattern)) {
+                    return Results
+                            .ok()
+                            .json()
+                            .render("success", true)
+                            .render("id", target.getId());
                 }
-
-                if (pattern != null) {
-                    pattern = pattern.replaceAll("(^\\s+)|(\\s+$)", "");
-                }
-
-                if (Validator.isEmpty(name)) {
-                    throw new Exception("error.invalidName");
-                }
-
-                GoogleTarget.PatternType type = null;
-                try {
-                    type = GoogleTarget.PatternType.valueOf(targetType);
-                } catch (Exception ex) {
-                    throw new Exception("error.invalidTargetType");
-                }
-
-                if(GoogleTarget.PatternType.DOMAIN.equals(type) || GoogleTarget.PatternType.SUBDOMAIN.equals(type)){
-                    try {
-                        pattern = IDN.toASCII(pattern);
-                    } catch(Exception ex) {
-                        pattern = null;
-                    }
-                }
-
-                if (!GoogleTarget.isValidPattern(type, pattern)) {
-                    throw new Exception("error.invalidPattern");
-                }
-
-                Group group = new Group(Integer.parseInt(groupId), Group.Module.GOOGLE, "");
-
-                targets.add(new GoogleTarget(group.getId(), name, type, pattern));
             }
 
-            if (googleDB.target.insert(targets) < 1) {
+            Set<GoogleTarget> targets = new HashSet<>();
+
+            name = name.replaceAll("(^\\s+)|(\\s+$)", "");
+
+            pattern = pattern.replaceAll("(^\\s+)|(\\s+$)", "");
+
+            if (Validator.isEmpty(name)) {
+                throw new Exception("error.invalidName");
+            }
+
+            GoogleTarget.PatternType type = null;
+            try {
+                type = GoogleTarget.PatternType.valueOf(targetType);
+            } catch (Exception ex) {
+                throw new Exception("error.invalidTargetType");
+            }
+
+            if(GoogleTarget.PatternType.DOMAIN.equals(type) || GoogleTarget.PatternType.SUBDOMAIN.equals(type)){
+                try {
+                    pattern = IDN.toASCII(pattern);
+                } catch(Exception ex) {
+                    pattern = null;
+                }
+            }
+
+            if (!GoogleTarget.isValidPattern(type, pattern)) {
+                throw new Exception("error.invalidPattern");
+            }
+
+            Group group = new Group(Integer.parseInt(groupId), Group.Module.GOOGLE, "");
+
+            targets.add(new GoogleTarget(group.getId(), name, type, pattern));
+
+            int id = googleDB.target.insert(targets);
+            if (id < 1) {
                 throw new Exception("error.internalError");
             }
             return Results
                     .ok()
                     .json()
-                    .render("success", true);
+                    .render("success", true)
+                    .render("id", id);
         } catch (Exception ex) {
             return Results
                     .ok()
