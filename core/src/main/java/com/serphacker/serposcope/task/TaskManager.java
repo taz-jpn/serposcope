@@ -51,9 +51,11 @@ public class TaskManager {
             if(googleTask != null && googleTask.isAlive()){
                 return false;
             }
-            
+
+            LOG.debug("startGoogleTask start");
             googleTask = googleTaskFactory.create(run);
             googleTask.start();
+            LOG.debug("startGoogleTask end");
             return true;
         }
     }
@@ -97,13 +99,12 @@ public class TaskManager {
     
     public List<Run> listRunningTasks(){
         List<Run> tasks = new ArrayList<>();
-        
-        synchronized(googleTaskLock){
+
+//        synchronized(googleTaskLock){
             if(googleTask != null && googleTask.isAlive()){
                 tasks.add(googleTask.getRun());
             }
-        }
-        
+//        }
         return tasks;
     }
     
