@@ -73,9 +73,7 @@ public class TaskController extends BaseController {
         long limit = 50;
         long offset = page * limit;
 
-        LOG.debug("aaaaaaa");
         List<Run> done = baseDB.run.listByStatus(RunDB.STATUSES_DONE, limit, offset);
-        LOG.debug("bbbbbbb");
 
         Integer previousPage = page > 0 ? (page - 1) : null;
         Integer nextPage = done.size() == limit ? (page + 1) : null;

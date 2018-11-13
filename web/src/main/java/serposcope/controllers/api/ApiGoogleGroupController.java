@@ -319,7 +319,6 @@ public class ApiGoogleGroupController extends BaseController {
             // get registered target list
             List<GoogleTarget> targetList = googleDB.target.list(null);
             for (GoogleTarget target: targetList) {
-                LOG.debug("group pattern={}", target.getPattern());
                 if (target.getPattern().equals(pattern)) {
                     return Results
                             .ok()

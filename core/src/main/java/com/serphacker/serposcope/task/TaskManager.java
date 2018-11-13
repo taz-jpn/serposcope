@@ -52,10 +52,8 @@ public class TaskManager {
                 return false;
             }
 
-            LOG.debug("startGoogleTask start");
             googleTask = googleTaskFactory.create(run);
             googleTask.start();
-            LOG.debug("startGoogleTask end");
             return true;
         }
     }
