@@ -42,9 +42,11 @@ public class ApiGoogleGroupController extends BaseController {
     @FilterWith(IpFilter.class)
     public Result delSearch(
             @Param("groupId") String groupId,
-            @Params("id[]") String[] ids
+            @Param("id") String id
     ) {
         try {
+            String[] ids = id.split("\\t", -1);
+
             if (ids == null || ids.length == 0) {
                 throw new Exception("error.noSearchSelected");
             }
@@ -54,10 +56,10 @@ public class ApiGoogleGroupController extends BaseController {
             }
 
             List<GoogleSearch> searches = new ArrayList<>();
-            for (String id : ids) {
+            for (String wordId : ids) {
                 GoogleSearch search = null;
                 try {
-                    search = getSearch(Integer.parseInt(id), Integer.parseInt(groupId));
+                    search = getSearch(Integer.parseInt(wordId), Integer.parseInt(groupId));
                 } catch (Exception ex) {
                     search = null;
                 }
@@ -96,13 +98,20 @@ public class ApiGoogleGroupController extends BaseController {
     public Result addSearch(
             Context context,
             @Param("groupId") String groupId,
-            @Params("keyword[]") String[] keywords,
-            @Params("tld[]") String tlds[], @Params("datacenter[]") String[] datacenters,
-            @Params("device[]") Integer[] devices,
-            @Params("local[]") String[] locals, @Params("custom[]") String[] customs
+            @Param("keyword") String keyword,
+            @Param("tld") String tld, @Param("datacenter") String datacenter,
+            @Param("device") String device,
+            @Param("local") String local, @Param("custom") String custom
     ) {
         try {
-            if (groupId == null || keywords == null || tlds == null || datacenters == null || devices == null || locals == null || customs == null
+            String[] keywords = keyword.split("\\t", -1);
+            String[] tlds = tld.split("\\t", -1);
+            String[] datacenters = datacenter.split("\\t", -1);
+            String[] devices = device.split("\\t", -1);
+            String[] locals = local.split("\\t", -1);
+            String[] customs = custom.split("\\t", -1);
+
+            if (groupId == null || keyword == null || tld == null || datacenter == null || device == null || local == null || custom == null
                     || keywords.length != tlds.length || keywords.length != datacenters.length || keywords.length != devices.length
                     || keywords.length != locals.length || keywords.length != customs.length) {
                 throw new Exception("error.invalidParameters");
@@ -134,8 +143,8 @@ public class ApiGoogleGroupController extends BaseController {
                     search.setDatacenter(datacenters[i]);
                 }
 
-                if (devices[i] != null && devices[i] >= 0 && devices[i] < GoogleDevice.values().length) {
-                    search.setDevice(GoogleDevice.values()[devices[i]]);
+                if (devices[i] != null && Integer.parseInt(devices[i]) >= 0 && Integer.parseInt(devices[i]) < GoogleDevice.values().length) {
+                    search.setDevice(GoogleDevice.values()[Integer.parseInt(devices[i])]);
                 } else {
                     search.setDevice(GoogleDevice.DESKTOP);
                 }
