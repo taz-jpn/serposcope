@@ -37,12 +37,12 @@ public class TaskManager {
     GoogleTask googleTask;
     
     public boolean isGoogleRunning(){
-        synchronized(googleTaskLock){
+//        synchronized(googleTaskLock){
             if(googleTask != null && googleTask.isAlive()){
                 return true;
             }
             return false;
-        }        
+//        }
     }
     
     public boolean startGoogleTask(Run run){
