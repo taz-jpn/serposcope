@@ -13,6 +13,7 @@ import com.serphacker.serposcope.db.google.GoogleDB;
 import com.serphacker.serposcope.di.CaptchaSolverFactory;
 import com.serphacker.serposcope.di.ScrapClientFactory;
 //import com.serphacker.serposcope.di.ScraperFactory;
+import com.serphacker.serposcope.models.base.Group;
 import com.serphacker.serposcope.models.base.Proxy;
 import com.serphacker.serposcope.models.base.Run;
 import com.serphacker.serposcope.models.google.GoogleSettings;
@@ -28,10 +29,8 @@ import com.serphacker.serposcope.scraper.http.ScrapClient;
 import com.serphacker.serposcope.scraper.http.proxy.DirectNoProxy;
 import com.serphacker.serposcope.scraper.http.proxy.ProxyRotator;
 import com.serphacker.serposcope.task.AbstractTask;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
@@ -42,7 +41,6 @@ import com.serphacker.serposcope.di.GoogleScraperFactory;
 import com.serphacker.serposcope.models.google.GoogleBest;
 import com.serphacker.serposcope.models.google.GoogleTargetSummary;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GoogleTask extends AbstractTask {
@@ -125,7 +123,15 @@ public class GoogleTask extends AbstractTask {
         
         startThreads(nThread);
         waitForThreads();
-        
+
+        // rescan !!
+        List<Group> groups = baseDB.group.list();
+        for (Group group : groups) {
+            List<GoogleTarget> targets = googleDB.target.list(Arrays.asList(group.getId()));
+            List<GoogleSearch> searches = googleDB.search.listByGroup(Arrays.asList(group.getId()));
+            googleDB.serpRescan.rescan(null, targets, searches, false);
+        }
+
         finalizeSummaries();
         
         if(solver != null){

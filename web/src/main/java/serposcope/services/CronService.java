@@ -88,14 +88,6 @@ public class CronService implements Runnable {
             return;
         }
 
-        // rescan !!
-        List<Group> groups = baseDB.group.list();
-        for (Group group : groups) {
-            List<GoogleTarget> targets = googleDB.target.list(Arrays.asList(group.getId()));
-            List<GoogleSearch> searches = googleDB.search.listByGroup(Arrays.asList(group.getId()));
-            googleDB.serpRescan.rescan(null, targets, searches, false);
-        }
-
         if(manager.startGoogleTask(new Run(Run.Mode.CRON, Module.GOOGLE, LocalDateTime.now()))){
             LOG.debug("starting google task via cron");
         } else {
