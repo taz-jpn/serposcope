@@ -22,6 +22,7 @@ import com.serphacker.serposcope.models.google.GoogleSearch;
 import com.serphacker.serposcope.models.google.GoogleSerp;
 import com.serphacker.serposcope.models.google.GoogleSerpEntry;
 import com.serphacker.serposcope.models.google.GoogleTarget;
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.scraper.captcha.solver.CaptchaSolver;
 import com.serphacker.serposcope.scraper.google.GoogleScrapResult;
 import com.serphacker.serposcope.scraper.google.scraper.GoogleScraper;
@@ -106,7 +107,8 @@ public class GoogleTask extends AbstractTask {
         
         int nThread = googleOptions.getMaxThreads();
         List<ScrapProxy> proxies = baseDB.proxy.list().stream().map(Proxy::toScrapProxy).collect(Collectors.toList());
-        
+        List<String> proxyList = baseDB.proxy.list().stream().map(Proxy::getIp).collect(Collectors.toList());
+
         if(proxies.isEmpty()){
             LOG.warn("no proxy configured, using direct connection");
             proxies.add(new DirectNoProxy());
@@ -133,7 +135,11 @@ public class GoogleTask extends AbstractTask {
         }
 
         finalizeSummaries();
-        
+
+        LOG.info("stop all proxies");
+        AmazonProxy amazonProxy = new AmazonProxy();
+        amazonProxy.StopAllInstance(proxyList);
+
         if(solver != null){
             try {solver.close();} catch (IOException ex) {}
         }
