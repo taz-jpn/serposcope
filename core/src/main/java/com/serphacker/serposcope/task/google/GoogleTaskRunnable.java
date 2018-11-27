@@ -9,10 +9,14 @@ package com.serphacker.serposcope.task.google;
 
 import com.serphacker.serposcope.models.google.GoogleSettings;
 import com.serphacker.serposcope.models.google.GoogleSearch;
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.scraper.google.GoogleScrapSearch;
 import com.serphacker.serposcope.scraper.google.GoogleScrapResult;
 import static com.serphacker.serposcope.scraper.google.GoogleScrapResult.Status.OK;
 import com.serphacker.serposcope.scraper.google.scraper.GoogleScraper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +24,8 @@ import com.serphacker.serposcope.scraper.http.proxy.ScrapProxy;
 import com.serphacker.serposcope.task.google.GoogleTask;
 import java.util.List;
 import org.apache.http.cookie.Cookie;
+
+import javax.inject.Inject;
 
 public class GoogleTaskRunnable implements Runnable {
 
@@ -33,6 +39,9 @@ public class GoogleTaskRunnable implements Runnable {
     public GoogleTaskRunnable(GoogleTask controller) {
         this.controller = controller;
         scraper = controller.genScraper();
+        if (scraper != null) {
+            scraper.ProxyList = controller.proxyList;
+        }
     }
     
     boolean cookiesStickToProxy = true;

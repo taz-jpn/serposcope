@@ -22,12 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author admin
  */
 public class GoogleScraper {
-    
+
     public final static int MAX_RETRY = 3;
     
     final static BasicClientCookie NCR_COOKIE = new BasicClientCookie("PREF", "ID=1111111111111111:CR=2");
@@ -65,6 +60,7 @@ public class GoogleScraper {
     public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1";
     
     private static final Logger LOG = LoggerFactory.getLogger(GoogleScraper.class);
+    public List<String> ProxyList = new ArrayList<>(Arrays.asList("0.0.0.0"));
 
     protected ScrapClient http;
     protected CaptchaSolver solver;
@@ -80,15 +76,25 @@ public class GoogleScraper {
     }
     
     public GoogleScrapResult scrap(GoogleScrapSearch search) throws InterruptedException {
-        // check instance status
+        // starting all proxy
         AmazonProxy amazonProxy = new AmazonProxy();
-        if (!amazonProxy.IsRunning()) {
-            // if instances are all dead then sleep 120 seconds
+        amazonProxy.StartAllInstance(ProxyList);
+        // check instance status
+        if (!ProxyList.get(0).equals("0.0.0.0") && !amazonProxy.IsRunning(ProxyList)) {
+            // if instances are all dead then sleep 10 seconds
             try {
-                LOG.trace("sleeping 2000 milliseconds");
-                Thread.sleep(2000);
+                LOG.trace("all proxy stopping");
+                LOG.trace("sleeping 10000 milliseconds");
+                Thread.sleep(10000);
             } catch(InterruptedException ex){
                 throw ex;
+            }
+        }
+        // do not do anything if the proxy is stopped
+        HttpProxy httpProxy = (HttpProxy) http.getProxy();
+        if (httpProxy != null) {
+            if (!amazonProxy.IsRunning(new ArrayList<>(Arrays.asList(httpProxy.getIp())))) {
+                return new GoogleScrapResult(Status.ERROR_NETWORK, new ArrayList<>(), 0);
             }
         }
 

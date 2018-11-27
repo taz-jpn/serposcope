@@ -15,9 +15,11 @@ import com.serphacker.serposcope.db.google.GoogleDB;
 import com.serphacker.serposcope.models.base.Config;
 import com.serphacker.serposcope.models.base.Group;
 import com.serphacker.serposcope.models.base.Group.Module;
+import com.serphacker.serposcope.models.base.Proxy;
 import com.serphacker.serposcope.models.base.Run;
 import com.serphacker.serposcope.models.google.GoogleSearch;
 import com.serphacker.serposcope.models.google.GoogleTarget;
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.task.TaskManager;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import ninja.lifecycle.Dispose;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class CronService implements Runnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(CronService.class);
-    
+
     LocalTime previousCheck = null;
     ScheduledExecutorService executor;
 
@@ -83,8 +86,35 @@ public class CronService implements Runnable {
         if(config.getCronTime() == null){
             return;
         }
-        
-        if(config.getCronTime().getHour() != now.getHour() || config.getCronTime().getMinute() != now.getMinute()){
+
+        // get cron time
+        int hour = config.getCronTime().getHour();
+        int minute = config.getCronTime().getMinute();
+
+        // make the proxy startup time(10 minutes before cron time)
+        int proxyHour = hour;
+        int proxyMinute = minute;
+        if (proxyMinute >= 10) {
+            proxyMinute -= 10;
+        } else {
+            proxyMinute = minute + 50;
+            if (proxyHour >= 1) {
+                proxyHour--;
+            } else {
+                proxyHour = 23;
+            }
+        }
+//        LOG.debug("proxyHour={}, proxyMinute={}", proxyHour, proxyMinute);
+
+        // check proxy startup time
+        if (proxyHour == now.getHour() && proxyMinute == now.getMinute()) {
+            LOG.debug("starting proxy server via cron");
+            List<String> proxyList = baseDB.proxy.list().stream().map(Proxy::getIp).collect(Collectors.toList());
+            AmazonProxy amazonProxy = new AmazonProxy();
+            amazonProxy.StartAllInstance(proxyList);
+        }
+
+        if(hour != now.getHour() || minute != now.getMinute()){
             return;
         }
 

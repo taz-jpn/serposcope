@@ -47,7 +47,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GoogleTask extends AbstractTask {
 
     protected static final Logger LOG = LoggerFactory.getLogger(GoogleTask.class);
-    
+    public List<String> proxyList;
+
     GoogleScraperFactory googleScraperFactory;
     CaptchaSolverFactory captchaSolverFactory;
     ScrapClientFactory scrapClientFactory;
@@ -107,7 +108,7 @@ public class GoogleTask extends AbstractTask {
         
         int nThread = googleOptions.getMaxThreads();
         List<ScrapProxy> proxies = baseDB.proxy.list().stream().map(Proxy::toScrapProxy).collect(Collectors.toList());
-        List<String> proxyList = baseDB.proxy.list().stream().map(Proxy::getIp).collect(Collectors.toList());
+        proxyList = baseDB.proxy.list().stream().map(Proxy::getIp).collect(Collectors.toList());
 
         if(proxies.isEmpty()){
             LOG.warn("no proxy configured, using direct connection");

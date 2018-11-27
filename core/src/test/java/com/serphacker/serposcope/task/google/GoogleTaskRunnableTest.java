@@ -86,7 +86,8 @@ public class GoogleTaskRunnableTest {
 //        taskController.searchDone = new AtomicInteger();
         taskController.totalSearch = 0;        
         taskController.googleOptions = new GoogleSettings();
-        
+        taskController.proxyList = new ArrayList<>(Arrays.asList("0.0.0.0", "127.0.0.2"));
+
         runnable = new GoogleTaskRunnable(taskController);
         runnable.scraper = mock(GoogleScraper.class);
         when(runnable.scraper.getHttp()).thenReturn(mock(ScrapClient.class));
@@ -135,6 +136,7 @@ public class GoogleTaskRunnableTest {
         taskController.rotator.addAll(proxies);
         taskController.searches = new LinkedBlockingQueue<>();
         taskController.searches.add(new GoogleSearch("keyword"));
+        taskController.proxyList = new ArrayList<>(Arrays.asList("0.0.0.0", "127.0.0.2"));
 
         when(taskController.shouldStop()).thenReturn(false, true);
         when(runnable.scraper.scrap(any())).thenThrow(new UnsupportedOperationException("lolex"));
