@@ -12,23 +12,29 @@ import java.util.List;
 
 public class AmazonProxy {
 
+    final Object proxyTaskLock = new Object();
+
     private static final Logger LOG = LoggerFactory.getLogger(AmazonProxy.class);
 
 
     public void StartAllInstance(List<String> proxies) {
-        ArrayList<String> stoppingInstances = getSpecifyInstance(proxies, "stopped");
-        if (stoppingInstances.size() > 0) {
-            for (String instanceId : stoppingInstances) {
-                StartInstance(instanceId);
+        synchronized (proxyTaskLock) {
+            ArrayList<String> stoppingInstances = getSpecifyInstance(proxies, "stopped");
+            if (stoppingInstances.size() > 0) {
+                for (String instanceId : stoppingInstances) {
+                    StartInstance(instanceId);
+                }
             }
         }
     }
 
     public void StopAllInstance(List<String> proxies) {
-        ArrayList<String> runningInstances = getSpecifyInstance(proxies, "running");
-        if (runningInstances.size() > 0) {
-            for (String instanceId : runningInstances) {
-                StopInstance(instanceId);
+        synchronized (proxyTaskLock) {
+            ArrayList<String> runningInstances = getSpecifyInstance(proxies, "running");
+            if (runningInstances.size() > 0) {
+                for (String instanceId : runningInstances) {
+                    StopInstance(instanceId);
+                }
             }
         }
     }
@@ -73,17 +79,21 @@ public class AmazonProxy {
     }
 
     public String getInstanceId(String IpAddress) {
-        ArrayList<String> runningInstances = getSpecifyInstance(new ArrayList<>(Arrays.asList(IpAddress)), "running");
+        synchronized (proxyTaskLock) {
+            ArrayList<String> runningInstances = getSpecifyInstance(new ArrayList<>(Arrays.asList(IpAddress)), "running");
 
-        if (runningInstances.size() > 0) {
-            return runningInstances.get(0);
+            if (runningInstances.size() > 0) {
+                return runningInstances.get(0);
+            }
+            return "";
         }
-        return "";
     }
 
     public Boolean IsRunning(List<String> proxies) {
-        ArrayList<String> runningInstances = getSpecifyInstance(proxies, "running");
+        synchronized (proxyTaskLock) {
+            ArrayList<String> runningInstances = getSpecifyInstance(proxies, "running");
 
-        return runningInstances.size() > 0;
+            return runningInstances.size() > 0;
+        }
     }
 }
