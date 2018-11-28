@@ -127,17 +127,17 @@ public class GoogleTask extends AbstractTask {
         startThreads(nThread);
         waitForThreads();
 
+        finalizeSummaries();
+
         // rescan !!
         List<Group> groups = baseDB.group.list();
         for (Group group : groups) {
             List<GoogleTarget> targets = googleDB.target.list(Arrays.asList(group.getId()));
             List<GoogleSearch> searches = googleDB.search.listByGroup(Arrays.asList(group.getId()));
-            googleDB.serpRescan.rescan(null, targets, searches, false);
+            googleDB.serpRescan.rescan(run.getId(), targets, searches, true);
         }
 
-        finalizeSummaries();
-
-        LOG.info("stop all proxies");
+        LOG.info("stopping all proxies");
         AmazonProxy amazonProxy = new AmazonProxy();
         amazonProxy.StopAllInstance(proxyList);
 
