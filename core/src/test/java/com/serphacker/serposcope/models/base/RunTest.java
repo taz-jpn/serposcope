@@ -36,6 +36,33 @@ public class RunTest {
             r1.setProgress(10);
             assertEquals(9000, r1.getRemainingTimeMs(r1.getStarted().plusSeconds(1)));
         }        
+
+        {
+            Run r1 = new Run();
+            r1.setStarted(LocalDateTime.now().withNano(0));
+            r1.setProgress(50);
+            r1.setTotalSearch(100);
+            r1.setSearchDone(50);
+            assertEquals(1000, r1.getRemainingTimeMs(r1.getStarted().plusSeconds(1)));
+        }
+
+        {
+            Run r1 = new Run();
+            r1.setStarted(LocalDateTime.now().withNano(0));
+            r1.setProgress(10);
+            r1.setTotalSearch(100);
+            r1.setSearchDone(10);
+            assertEquals(9000, r1.getRemainingTimeMs(r1.getStarted().plusSeconds(1)));
+        }
+
+        {
+            Run r1 = new Run();
+            r1.setStarted(LocalDateTime.now().withNano(0));
+            r1.setProgress(10);
+            r1.setTotalSearch(100);
+            r1.setSearchDone(18);
+            assertEquals(4510, r1.getRemainingTimeMs(r1.getStarted().plusSeconds(1)));
+        }
     }
 
 }

@@ -208,7 +208,9 @@ public class GoogleTask extends AbstractTask {
     }
     
     protected void incSearchDone(){
-        run.setProgress((int) (((float)searchDone.incrementAndGet()/(float)totalSearch)*100f) );
+        run.setProgress((int) (((float)searchDone.incrementAndGet()/(float)totalSearch)*100f));
+        run.setSearchDone(searchDone.longValue());
+        run.setTotalSearch(totalSearch);
         baseDB.run.updateProgress(run);
     }
     
