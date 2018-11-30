@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.lang.Thread;
 
 public class AmazonProxy {
 
@@ -23,6 +24,12 @@ public class AmazonProxy {
             if (stoppingInstances.size() > 0) {
                 for (String instanceId : stoppingInstances) {
                     StartInstance(instanceId);
+                    LOG.trace("sleeping 200 milliseconds");
+                    try {
+                        Thread.sleep(200L);
+                    } catch (InterruptedException e) {
+                        LOG.debug("interrupted while waiting for starting instance");
+                    }
                 }
             }
         }

@@ -7,25 +7,22 @@
  */
 package com.serphacker.serposcope.task.google;
 
-import com.serphacker.serposcope.models.google.GoogleSettings;
+import com.amazonaws.AbortedException;
+import com.amazonaws.services.ec2.model.AmazonEC2Exception;
 import com.serphacker.serposcope.models.google.GoogleSearch;
-import com.serphacker.serposcope.scraper.aws.AmazonProxy;
-import com.serphacker.serposcope.scraper.google.GoogleScrapSearch;
+import com.serphacker.serposcope.models.google.GoogleSettings;
 import com.serphacker.serposcope.scraper.google.GoogleScrapResult;
-import static com.serphacker.serposcope.scraper.google.GoogleScrapResult.Status.OK;
+import com.serphacker.serposcope.scraper.google.GoogleScrapSearch;
 import com.serphacker.serposcope.scraper.google.scraper.GoogleScraper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+import com.serphacker.serposcope.scraper.http.proxy.ScrapProxy;
+import org.apache.http.cookie.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.serphacker.serposcope.scraper.http.proxy.ScrapProxy;
-import com.serphacker.serposcope.task.google.GoogleTask;
-import java.util.List;
-import org.apache.http.cookie.Cookie;
 
-import javax.inject.Inject;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.serphacker.serposcope.scraper.google.GoogleScrapResult.Status.OK;
 
 public class GoogleTaskRunnable implements Runnable {
 
@@ -109,6 +106,12 @@ public class GoogleTaskRunnable implements Runnable {
                 } catch (InterruptedException ex) {
                     LOG.error("interrupted while scraping, aborting the thread");
                     break;
+                } catch (AbortedException ex) {
+                    LOG.error("aborted exception. {}", ex.getMessage());
+                    break;
+                } catch (AmazonEC2Exception ex) {
+                    LOG.error("error ec2 exception. {}", ex.getMessage());
+                    continue;
                 }
                 
                 if( res.captchas > 0 ){
