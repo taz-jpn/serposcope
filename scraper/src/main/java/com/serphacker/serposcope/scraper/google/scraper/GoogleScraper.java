@@ -139,9 +139,9 @@ public class GoogleScraper {
                 resultsNumber = parseResultsNumberOnFirstPage();
             }
             
-            if(!hasNextPage()){
-                break;
-            }
+//            if(!hasNextPage()){
+//                break;
+//            }
             
             long pause = search.getRandomPagePauseMS();
             if(pause > 0){
