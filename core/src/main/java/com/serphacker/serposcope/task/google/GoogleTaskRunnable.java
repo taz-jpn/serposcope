@@ -111,6 +111,8 @@ public class GoogleTaskRunnable implements Runnable {
                     break;
                 } catch (AmazonEC2Exception ex) {
                     LOG.error("error ec2 exception. {}", ex.getMessage());
+                    long waitTime = Math.min((long) Math.pow(2, searchTry) * 100L, 60000L);
+                    LOG.trace("sleeping {} milliseconds", waitTime);
                     continue;
                 }
                 

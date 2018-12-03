@@ -47,22 +47,24 @@ public class AmazonProxy {
     }
 
     private ArrayList<String> getSpecifyInstance(List<String> proxies, String instanceStatus) {
-        final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+        synchronized (proxyTaskLock) {
+            final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
 
-        Filter status = new Filter("instance-state-name").withValues(instanceStatus);
-        Filter ips =  new Filter("private-ip-address").withValues(proxies);
-        DescribeInstancesRequest request = new DescribeInstancesRequest().withFilters(status, ips);
-        DescribeInstancesResult response = ec2.describeInstances(request);
+            Filter status = new Filter("instance-state-name").withValues(instanceStatus);
+            Filter ips = new Filter("private-ip-address").withValues(proxies);
+            DescribeInstancesRequest request = new DescribeInstancesRequest().withFilters(status, ips);
+            DescribeInstancesResult response = ec2.describeInstances(request);
 
-        ArrayList<String> instances = new ArrayList<>();
-        if (response.getReservations().size() > 0) {
-            for (Reservation reservation : response.getReservations()) {
-                for (Instance instance : reservation.getInstances()) {
-                    instances.add(instance.getInstanceId());
+            ArrayList<String> instances = new ArrayList<>();
+            if (response.getReservations().size() > 0) {
+                for (Reservation reservation : response.getReservations()) {
+                    for (Instance instance : reservation.getInstances()) {
+                        instances.add(instance.getInstanceId());
+                    }
                 }
             }
+            return instances;
         }
-        return instances;
     }
 
     public void StartInstance(String instanceId) {
