@@ -37,12 +37,12 @@ public class TaskManager {
     GoogleTask googleTask;
     
     public boolean isGoogleRunning(){
-        synchronized(googleTaskLock){
+//        synchronized(googleTaskLock){
             if(googleTask != null && googleTask.isAlive()){
                 return true;
             }
             return false;
-        }        
+//        }
     }
     
     public boolean startGoogleTask(Run run){
@@ -51,7 +51,7 @@ public class TaskManager {
             if(googleTask != null && googleTask.isAlive()){
                 return false;
             }
-            
+
             googleTask = googleTaskFactory.create(run);
             googleTask.start();
             return true;
@@ -97,13 +97,12 @@ public class TaskManager {
     
     public List<Run> listRunningTasks(){
         List<Run> tasks = new ArrayList<>();
-        
-        synchronized(googleTaskLock){
+
+//        synchronized(googleTaskLock){
             if(googleTask != null && googleTask.isAlive()){
                 tasks.add(googleTask.getRun());
             }
-        }
-        
+//        }
         return tasks;
     }
     

@@ -30,7 +30,7 @@ public class GoogleTargetDB extends AbstractDB {
     QGoogleTarget t_target = QGoogleTarget.googleTarget;
 
     public int insert(Collection<GoogleTarget> targets){
-        int inserted = 0;
+        int id = 0;
         
         try(Connection con = ds.getConnection()){
             
@@ -45,7 +45,7 @@ public class GoogleTargetDB extends AbstractDB {
                 
                 if(key != null){
                     target.setId(key);
-                    inserted++;
+                    id = key;
                 }
             }
             
@@ -53,7 +53,7 @@ public class GoogleTargetDB extends AbstractDB {
             LOG.error("SQL error", ex);
         }
         
-        return inserted;
+        return id;
     }
     
     public boolean rename(GoogleTarget target){

@@ -14,6 +14,10 @@ import java.util.Random;
 public class GoogleScrapSearch {
     
     private final static Random random = new Random();
+    private String userAgentDesktop;
+    private String userAgentMobile;
+    private String serpsSelectorDesktop = "#ires .srg div:not(#imagebox_bigimages).g > div > div.rc > div.r";
+    private String serpsSelectorMobile = "#rso > div.srg a.C8nzq.BmP5tf, #rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
 
     public GoogleScrapSearch() {
     }
@@ -35,6 +39,18 @@ public class GoogleScrapSearch {
 
     public void setResultPerPage(int resultPerPage) {
         this.resultPerPage = resultPerPage;
+    }
+
+    public String getUserAgentDesktop() { return this.userAgentDesktop; }
+
+    public void setUserAgentDesktop(String value) {
+        this.userAgentDesktop = value;
+    }
+
+    public String getUserAgentMobile() { return this.userAgentMobile; }
+
+    public void setUserAgentMobile(String value) {
+        this.userAgentMobile = value;
     }
 
     public int getPages() {
@@ -92,7 +108,19 @@ public class GoogleScrapSearch {
     public void setCustomParameters(String customParameters) {
         this.customParameters = customParameters;
     }
-    
+
+    public String getSerpsSelectorDesktop() { return this.serpsSelectorDesktop; }
+
+    public void setSerpsSelectorDesktop(String value) {
+        this.serpsSelectorDesktop = value;
+    }
+
+    public String getSerpsSelectorMobile() { return this.serpsSelectorMobile; }
+
+    public void setSerpsSelectorMobile(String value) {
+        this.serpsSelectorMobile = value;
+    }
+
     public void setPagePauseMS(long minMs, long maxMs){
         if(minMs > maxMs){
             throw new IllegalArgumentException("minMs > maxMs");

@@ -61,7 +61,7 @@
                                     </excludes>
                                 </bannedDependencies>
                             </rules>
-                            <fail>true</fail>
+                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>
@@ -71,7 +71,6 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <configuration>
-                    <contextPath>/</contextPath>
                     <stopKey>stop</stopKey>
                     <stopPort>8889</stopPort>
                     <scanIntervalSeconds>1</scanIntervalSeconds>
@@ -115,7 +114,7 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            
+
         </plugins>
         
         <resources>

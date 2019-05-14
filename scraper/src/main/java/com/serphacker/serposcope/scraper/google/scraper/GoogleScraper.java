@@ -7,6 +7,7 @@
  */
 package com.serphacker.serposcope.scraper.google.scraper;
 
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.scraper.captcha.Captcha;
 import com.serphacker.serposcope.scraper.captcha.CaptchaImage;
 import com.serphacker.serposcope.scraper.captcha.CaptchaRecaptcha;
@@ -21,15 +22,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.serphacker.serposcope.scraper.http.proxy.HttpProxy;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -47,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author admin
  */
 public class GoogleScraper {
-    
+
     public final static int MAX_RETRY = 3;
     
     final static BasicClientCookie NCR_COOKIE = new BasicClientCookie("PREF", "ID=1111111111111111:CR=2");
@@ -62,6 +60,7 @@ public class GoogleScraper {
     public final static String DEFAULT_SMARTPHONE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1";
     
     private static final Logger LOG = LoggerFactory.getLogger(GoogleScraper.class);
+    public List<String> ProxyList = new ArrayList<>(Arrays.asList("0.0.0.0"));
 
     protected ScrapClient http;
     protected CaptchaSolver solver;
@@ -77,6 +76,28 @@ public class GoogleScraper {
     }
     
     public GoogleScrapResult scrap(GoogleScrapSearch search) throws InterruptedException {
+        // starting all proxy
+        AmazonProxy amazonProxy = new AmazonProxy();
+        amazonProxy.StartAllInstance(ProxyList);
+        // check instance status
+        if (!ProxyList.get(0).equals("0.0.0.0") && !amazonProxy.IsRunning(ProxyList)) {
+            // if instances are all dead then sleep 10 seconds
+            try {
+                LOG.trace("all proxy stopping");
+                LOG.trace("sleeping 10000 milliseconds");
+                Thread.sleep(10000);
+            } catch(InterruptedException ex){
+                throw ex;
+            }
+        }
+        // do not do anything if the proxy is stopped
+        HttpProxy httpProxy = (HttpProxy) http.getProxy();
+        if (httpProxy != null) {
+            if (!amazonProxy.IsRunning(new ArrayList<>(Arrays.asList(httpProxy.getIp())))) {
+                return new GoogleScrapResult(Status.ERROR_NETWORK, new ArrayList<>(), 0);
+            }
+        }
+
         lastSerpHtml = null;
         captchas = 0;
         List<String> urls = new ArrayList<>();
@@ -118,9 +139,9 @@ public class GoogleScraper {
                 resultsNumber = parseResultsNumberOnFirstPage();
             }
             
-            if(!hasNextPage()){
-                break;
-            }
+//            if(!hasNextPage()){
+//                break;
+//            }
             
             long pause = search.getRandomPagePauseMS();
             if(pause > 0){
@@ -139,10 +160,10 @@ public class GoogleScraper {
         
         switch(search.getDevice()){
             case DESKTOP:
-                http.setUseragent(DEFAULT_DESKTOP_UA);
+                http.setUseragent(search.getUserAgentDesktop());
                 break;
             case SMARTPHONE:
-                http.setUseragent(DEFAULT_SMARTPHONE_UA);
+                http.setUseragent(search.getUserAgentMobile());
                 break;
         }
         
@@ -188,6 +209,12 @@ public class GoogleScraper {
                 break;
 
             case 302:
+                HttpProxy httpProxy = (HttpProxy) http.getProxy();
+                AmazonProxy amazonProxy = new AmazonProxy();
+                String instanceId = amazonProxy.getInstanceId(httpProxy.getIp());
+                if (instanceId != "") {
+                    amazonProxy.StopInstance(instanceId);
+                }
                 ++captchas;
                 return handleCaptchaRedirect(url, referrer, http.getResponseHeader("location"));
         }
@@ -209,22 +236,24 @@ public class GoogleScraper {
         String h3Pattern = null;
         switch(search.getDevice()){
             case DESKTOP:
-                h3Pattern = "#ires .srg div:not(#imagebox_bigimages).g > div > div.rc > div.r";
+                h3Pattern = search.getSerpsSelectorDesktop();
+                //h3Pattern = "#ires .srg div:not(#imagebox_bigimages).g > div > div.rc > div.r";
                 //h3Pattern = "#ires div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 //h3Pattern = "#rso div:not(#imagebox_bigimages).g div.rc > h3 > a";
                 //h3Pattern = "#ires div._NId div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 //h3Pattern = "#ires div.srg > div:not(#imagebox_bigimages).g > div > div.rc > h3";
                 break;
             case SMARTPHONE:
-                h3Pattern = "#rso > div.srg a.C8nzq.BmP5tf, #rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
+                h3Pattern = search.getSerpsSelectorMobile();
+                //h3Pattern = "#rso > div.srg a.C8nzq.BmP5tf, #rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
                 //h3Pattern = "#rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
                 //h3Pattern = "#rso .srg > div .C8nzq.JTuIPc, #rso .srg > div ._Olt._bCp";
                 break;
         }
         
         Elements h3Elts = lastSerpHtml.select(h3Pattern);
-	if (h3Elts.size() == 0) {
-                h3Elts = lastSerpHtml.getElementsByTag("h3");
+	    if (h3Elts.size() == 0) {
+            h3Elts = lastSerpHtml.getElementsByTag("h3");
         }
         // Elements h3Elts = lastSerpHtml.getElementsByTag("h3");
         for (Element h3Elt : h3Elts) {

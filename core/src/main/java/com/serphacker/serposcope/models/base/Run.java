@@ -19,7 +19,10 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 
 public class Run {
-    
+
+    private long searchDone;
+    private long totalSearch;
+
     public enum Mode {
         CRON,
         MANUAL
@@ -51,11 +54,17 @@ public class Run {
         this.day = started.toLocalDate();
         this.started = started;
         this.status = Status.RUNNING;
+        setSearchDone(0);
+        setTotalSearch(0);
     }
 
     public Run() {
     }
-    
+
+    public void setSearchDone(long value) {this.searchDone = value;}
+
+    public void setTotalSearch(long value) {this.totalSearch = value;}
+
     public int getId() {
         return id;
     }
@@ -138,8 +147,11 @@ public class Run {
         }
         
         long duration = (Math.abs(Duration.between(started, now).toMillis()) / 1000l)*1000l;
-        return (duration / progress) * (100-progress);
-    }    
+        if (searchDone == 0 || totalSearch == 0) {
+            return (duration / progress) * (100-progress);
+        }
+        return (duration / searchDone) * (totalSearch-searchDone);
+    }
     
     public long getRemainingTimeMs(){
         return getRemainingTimeMs(LocalDateTime.now());

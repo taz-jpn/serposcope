@@ -7,19 +7,22 @@
  */
 package com.serphacker.serposcope.task.google;
 
-import com.serphacker.serposcope.models.google.GoogleSettings;
+import com.amazonaws.AbortedException;
+import com.amazonaws.services.ec2.model.AmazonEC2Exception;
 import com.serphacker.serposcope.models.google.GoogleSearch;
-import com.serphacker.serposcope.scraper.google.GoogleScrapSearch;
+import com.serphacker.serposcope.models.google.GoogleSettings;
 import com.serphacker.serposcope.scraper.google.GoogleScrapResult;
-import static com.serphacker.serposcope.scraper.google.GoogleScrapResult.Status.OK;
+import com.serphacker.serposcope.scraper.google.GoogleScrapSearch;
 import com.serphacker.serposcope.scraper.google.scraper.GoogleScraper;
-import java.util.concurrent.TimeUnit;
+import com.serphacker.serposcope.scraper.http.proxy.ScrapProxy;
+import org.apache.http.cookie.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.serphacker.serposcope.scraper.http.proxy.ScrapProxy;
-import com.serphacker.serposcope.task.google.GoogleTask;
+
 import java.util.List;
-import org.apache.http.cookie.Cookie;
+import java.util.concurrent.TimeUnit;
+
+import static com.serphacker.serposcope.scraper.google.GoogleScrapResult.Status.OK;
 
 public class GoogleTaskRunnable implements Runnable {
 
@@ -33,6 +36,9 @@ public class GoogleTaskRunnable implements Runnable {
     public GoogleTaskRunnable(GoogleTask controller) {
         this.controller = controller;
         scraper = controller.genScraper();
+        if (scraper != null) {
+            scraper.ProxyList = controller.proxyList;
+        }
     }
     
     boolean cookiesStickToProxy = true;
@@ -100,6 +106,14 @@ public class GoogleTaskRunnable implements Runnable {
                 } catch (InterruptedException ex) {
                     LOG.error("interrupted while scraping, aborting the thread");
                     break;
+                } catch (AbortedException ex) {
+                    LOG.error("aborted exception. {}", ex.getMessage());
+                    break;
+                } catch (AmazonEC2Exception ex) {
+                    LOG.error("error ec2 exception. {}", ex.getMessage());
+                    long waitTime = Math.min((long) Math.pow(2, searchTry) * 100L, 300000L);
+                    LOG.trace("sleeping {} milliseconds", waitTime);
+                    continue;
                 }
                 
                 if( res.captchas > 0 ){
@@ -137,14 +151,18 @@ public class GoogleTaskRunnable implements Runnable {
         scrapSearch.setPagePauseMS(options.getMinPauseBetweenPageSec()*1000l, options.getMaxPauseBetweenPageSec()*1000l);
         scrapSearch.setPages(options.getPages());
         scrapSearch.setResultPerPage(options.getResultPerPage());
-        
+        scrapSearch.setUserAgentDesktop(options.getDefaultUserAgentDesktop());
+        scrapSearch.setUserAgentMobile(options.getDefaultUserAgentMobile());
+        scrapSearch.setSerpsSelectorDesktop(options.getDefaultserpsSelectorDesktop());
+        scrapSearch.setSerpsSelectorMobile(options.getDefaultserpsSelectorMobile());
+
         scrapSearch.setCustomParameters(search.getCustomParameters());
         scrapSearch.setDatacenter(search.getDatacenter());
         scrapSearch.setDevice(search.getDevice());
         scrapSearch.setKeyword(search.getKeyword());
         scrapSearch.setTld(search.getTld());
         scrapSearch.setLocal(search.getLocal());
-        
+
         return scrapSearch;
     }
     public static final long serialVersionUID = 0L;

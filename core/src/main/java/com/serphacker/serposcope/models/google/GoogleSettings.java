@@ -26,6 +26,10 @@ public class GoogleSettings {
     GoogleDevice defaultDevice = GoogleDevice.DESKTOP;
     String defaultLocal = null;
     String defaultCustomParameters = null;
+    String defaultUserAgentDesktop = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15";
+    String defaultUserAgentMobile = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Mobile/15E148 Safari/604.1";
+    private String defaultserpsSelectorDesktop = "#ires .srg div:not(#imagebox_bigimages).g > div > div.rc > div.r";
+    private String defaultserpsSelectorMobile = "#rso > div.srg a.C8nzq.BmP5tf, #rso > div.srg a.C8nzq.JTuIPc, #rso > div.srg a.sXtWJb";
 
     public int getResultPerPage() {
         return resultPerPage;
@@ -88,6 +92,22 @@ public class GoogleSettings {
         return defaultDatacenter;
     }
 
+    public String getDefaultUserAgentDesktop() {
+        return defaultUserAgentDesktop;
+    }
+
+    public void setDefaultUserAgentDesktop(String defaultUserAgentDesktop) {
+        this.defaultUserAgentDesktop = defaultUserAgentDesktop;
+    }
+
+    public String getDefaultUserAgentMobile() {
+        return defaultUserAgentMobile;
+    }
+
+    public void setDefaultUserAgentMobile(String defaultUserAgentMobile) {
+        this.defaultUserAgentMobile = defaultUserAgentMobile;
+    }
+
     public void setDefaultDatacenter(String defaultDatacenter) {
         this.defaultDatacenter = defaultDatacenter;
     }
@@ -112,7 +132,7 @@ public class GoogleSettings {
         } catch(Exception ex){
         }
     }
-    
+
     public String getDefaultLocal() {
         return defaultLocal;
     }
@@ -128,5 +148,20 @@ public class GoogleSettings {
     public void setDefaultCustomParameters(String defaultCustomParameters) {
         this.defaultCustomParameters = defaultCustomParameters;
     }
-    
+
+    public String getDefaultserpsSelectorDesktop() {
+        return defaultserpsSelectorDesktop;
+    }
+
+    public void setDefaultserpsSelectorDesktop(String defaultserpsSelectorDesktop) {
+        this.defaultserpsSelectorDesktop = defaultserpsSelectorDesktop;
+    }
+
+    public String getDefaultserpsSelectorMobile() {
+        return defaultserpsSelectorMobile;
+    }
+
+    public void setDefaultserpsSelectorMobile(String defaultserpsSelectorMobile) {
+        this.defaultserpsSelectorMobile = defaultserpsSelectorMobile;
+    }
 }

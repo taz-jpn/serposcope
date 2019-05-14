@@ -13,6 +13,7 @@ import com.serphacker.serposcope.db.google.GoogleDB;
 import com.serphacker.serposcope.di.CaptchaSolverFactory;
 import com.serphacker.serposcope.di.ScrapClientFactory;
 //import com.serphacker.serposcope.di.ScraperFactory;
+import com.serphacker.serposcope.models.base.Group;
 import com.serphacker.serposcope.models.base.Proxy;
 import com.serphacker.serposcope.models.base.Run;
 import com.serphacker.serposcope.models.google.GoogleSettings;
@@ -21,6 +22,7 @@ import com.serphacker.serposcope.models.google.GoogleSearch;
 import com.serphacker.serposcope.models.google.GoogleSerp;
 import com.serphacker.serposcope.models.google.GoogleSerpEntry;
 import com.serphacker.serposcope.models.google.GoogleTarget;
+import com.serphacker.serposcope.scraper.aws.AmazonProxy;
 import com.serphacker.serposcope.scraper.captcha.solver.CaptchaSolver;
 import com.serphacker.serposcope.scraper.google.GoogleScrapResult;
 import com.serphacker.serposcope.scraper.google.scraper.GoogleScraper;
@@ -28,10 +30,8 @@ import com.serphacker.serposcope.scraper.http.ScrapClient;
 import com.serphacker.serposcope.scraper.http.proxy.DirectNoProxy;
 import com.serphacker.serposcope.scraper.http.proxy.ProxyRotator;
 import com.serphacker.serposcope.task.AbstractTask;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
@@ -42,13 +42,13 @@ import com.serphacker.serposcope.di.GoogleScraperFactory;
 import com.serphacker.serposcope.models.google.GoogleBest;
 import com.serphacker.serposcope.models.google.GoogleTargetSummary;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GoogleTask extends AbstractTask {
 
     protected static final Logger LOG = LoggerFactory.getLogger(GoogleTask.class);
-    
+    public List<String> proxyList;
+
     GoogleScraperFactory googleScraperFactory;
     CaptchaSolverFactory captchaSolverFactory;
     ScrapClientFactory scrapClientFactory;
@@ -108,7 +108,8 @@ public class GoogleTask extends AbstractTask {
         
         int nThread = googleOptions.getMaxThreads();
         List<ScrapProxy> proxies = baseDB.proxy.list().stream().map(Proxy::toScrapProxy).collect(Collectors.toList());
-        
+        proxyList = baseDB.proxy.list().stream().map(Proxy::getIp).collect(Collectors.toList());
+
         if(proxies.isEmpty()){
             LOG.warn("no proxy configured, using direct connection");
             proxies.add(new DirectNoProxy());
@@ -125,9 +126,21 @@ public class GoogleTask extends AbstractTask {
         
         startThreads(nThread);
         waitForThreads();
-        
+
         finalizeSummaries();
-        
+
+        // rescan !!
+        List<Group> groups = baseDB.group.list();
+        for (Group group : groups) {
+            List<GoogleTarget> targets = googleDB.target.list(Arrays.asList(group.getId()));
+            List<GoogleSearch> searches = googleDB.search.listByGroup(Arrays.asList(group.getId()));
+            googleDB.serpRescan.rescan(run.getId(), targets, searches, true);
+        }
+
+        LOG.info("stopping all proxies");
+        AmazonProxy amazonProxy = new AmazonProxy();
+        amazonProxy.StopAllInstance(proxyList);
+
         if(solver != null){
             try {solver.close();} catch (IOException ex) {}
         }
@@ -195,7 +208,9 @@ public class GoogleTask extends AbstractTask {
     }
     
     protected void incSearchDone(){
-        run.setProgress((int) (((float)searchDone.incrementAndGet()/(float)totalSearch)*100f) );
+        run.setProgress((int) (((float)searchDone.incrementAndGet()/(float)totalSearch)*100f));
+        run.setSearchDone(searchDone.longValue());
+        run.setTotalSearch(totalSearch);
         baseDB.run.updateProgress(run);
     }
     

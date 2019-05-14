@@ -71,7 +71,7 @@ public class GoogleScraperTest {
         when(http.getContentAsString()).thenReturn("");
 
         GoogleScraper scraper = new GoogleScraper(http, null);
-        assertEquals(ERROR_NETWORK, scraper.parseSerp(new ArrayList<>()));
+        assertEquals(ERROR_NETWORK, scraper.parseSerp(new ArrayList<>(), new GoogleScrapSearch()));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class GoogleScraperTest {
             ScrapClient http = mock(ScrapClient.class);
             when(http.getContentAsString()).thenReturn(content);
             GoogleScraper scraper = new GoogleScraper(http, null);
-            assertEquals(OK, scraper.parseSerp(new ArrayList<>()));
+            assertEquals(OK, scraper.parseSerp(new ArrayList<>(), new GoogleScrapSearch()));
             assertFalse(scraper.hasNextPage());
         }
     }
@@ -111,7 +111,7 @@ public class GoogleScraperTest {
             when(http.getContentAsString()).thenReturn(testContent);
             GoogleScraper scraper = new GoogleScraper(http, null);
             List<String> urls = new ArrayList<>();
-            assertEquals(OK, scraper.parseSerp(urls));
+            assertEquals(OK, scraper.parseSerp(urls, new GoogleScrapSearch()));
             assertTrue(scraper.hasNextPage());
             
             File resFile = new File(testFile.toString() + ".res");
